@@ -1,0 +1,42 @@
+{% set navigation_bar = [
+    (url_for('index'), 'overview', 'Overview'),
+    (url_for('servers'), 'servers', 'Servers'),
+    (url_for('nodes'), 'nodes', 'Nodes'),
+    (url_for('policies'), 'policies', 'Policies'),
+    (url_for('repos'), 'repos', 'Repos'),
+    (url_for('installers'), 'installers', 'Installers'),
+    (url_for('brokers'), 'brokers', 'Brokers')
+] -%}
+{% set active_page = active_page|default('overview') -%}
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Occam</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="{{url_for('static', filename='css/bootstrap.min.css')}}" rel="stylesheet">
+    </head>
+    <body>
+        <nav class="navbar navbar-default navbar-static-top" role="navigation">
+            <div class="container">
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="{{url_for('index')}}">Occam</a>
+                </div>
+                <div class="collapse navbar-collapse">
+                    <ul class="nav navbar-nav">
+                    {% for href, id, caption in navigation_bar %}
+                      <li{% if id == active_page %} class="active"{% endif
+  %}><a href="{{href|e}}">{{caption|e}}</a></li>
+                    {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <div class="container">
+            {% block body %}{% endblock %}
+        </div>
+
+        <script src="{{url_for('static', filename='js/jquery-2.0.3.min.js')}}"></script>
+        <script src="{{url_for('static', filename='js/bootstrap.min.js')}}"></script>
+    </body>
+</html>

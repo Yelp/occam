@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% set active_page = generic_type %}
+
+{% macro render_generic_collection(things, type, singular, namevar='name') -%}
+{% set total_things = things.itervalues()|map('count')|sum %}
+{% set total_servers = things.keys()|count %}
+<div class="row">
+    <div class="col-md-12">
+        <h1>{{type|title}}</h1>
+        <p class="text-muted"><strong>{{total_things}}</strong> {{type}} tracked across <strong>{{total_servers}}</strong> razor servers</p>
+        <hr>
+    </div>
+</div>
+<div class="row">
+{% for server, server_things in things.iteritems() %}
+<div class="col-md-4">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <strong><a href="{{url_for(type, server=server)}}">{{server}}</a></strong>
+        </div>
+        <div class="panel-body">
+            <div class="list-group">
+            {% for thing in server_things|sort(attribute=namevar) %}
+                <a class="list-group-item" href="{{url_for(singular, server=server, ident=thing.name)}}">{{thing.get(namevar)}}</a>
+            {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+</div>
+{% endmacro %}
+
+{% macro render_server_collection(things, type, singular, server) %}
+{% set total_things = things.itervalues()|map('count')|sum %}
+<div class="row">
+    <div class="col-md-12">
+        <h1>{{type|title}} <small>on {{server}}</small></h1>
+        <p class="text-muted"><strong>{{total_things}}</strong> {{type}} tracked</p>
+        <hr>
+    </div>
+</div>
+<div class="row">
+{% for server, server_things in things.iteritems() %}
+<div class="col-md-2">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <strong><a href="{{url_for(type, server=server)}}">{{server}}</a></strong>
+        </div>
+        <div class="panel-body">
+        {% for thing in server_things %}
+            <a href="{{url_for(singular, server=server, ident=thing.name)}}">{{thing.name}}</a>
+        {% endfor %}
+        </div>
+    </div>
+</div>
+{% endfor %}
+</div>
+{% endmacro %}

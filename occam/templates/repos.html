@@ -1,0 +1,11 @@
+{% from "generic_collection.html" import render_generic_collection, render_server_collection %}
+{% extends "base.html" %}
+{% set active_page = "repos" %}
+
+{% block body %}
+{% if server %}
+    {{ render_server_collection(repos, "repos", "repo", server) }}
+{% else %}
+    {{ render_generic_collection(repos, "repos", "repo") }}
+{% endif %}
+{% endblock %}

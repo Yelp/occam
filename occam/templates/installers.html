@@ -1,0 +1,7 @@
+{% from "generic_collection.html" import render_generic_collection %}
+{% extends "base.html" %}
+{% set active_page = "installers" %}
+
+{% block body %}
+    {{ render_generic_collection(installers, "installers") }}
+{% endblock %}
