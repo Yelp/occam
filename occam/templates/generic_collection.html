@@ -20,7 +20,7 @@
         </div>
         <div class="panel-body">
             <div class="list-group">
-            {% for thing in server_things|sort(attribute=namevar) %}
+            {% for thing in server_things %}
                 <a class="list-group-item" href="{{url_for(singular, server=server, ident=thing.name)}}">{{thing.get(namevar)}}</a>
             {% endfor %}
             </div>

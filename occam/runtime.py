@@ -1,8 +1,14 @@
+import json
 from optparse import OptionParser
 import os.path
 import sys
 
 import yaml
+
+from occam.app import redis
+
+
+OCCAM_SERVER_CONFIG_KEY = "occam:config:servers"
 
 
 def build_parser():
@@ -36,4 +42,5 @@ def parse_config(config_path):
 
 def attach_occam_config_to_app(config_path, app):
     config = parse_config(config_path)
+    redis.set(OCCAM_SERVER_CONFIG_KEY, json.dumps(config['razor_servers']))
     app.occam_config = config

@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% set active_page = "activity" %}
+
+{% block head_js %}
+<script>
+
+window.seed_data = {};
+window.seed_data.nodes = JSON.parse('{{ nodes|tojson }}');
+window.seed_data.entries = JSON.parse('{{ entries|tojson }}');
+
+</script>
+<script src="{{url_for('static', filename='js/occam/activity_feed.js')}}"></script>
+{% endblock %}
+
+{% block body %}
+    <h1>Activity Stream</h1>
+
+    <div id="activity_feed" ng-controller="ActivityFeed">
+
+        {% raw %}
+        <div class="row col-xs-12 panel panel-info" ng-repeat="entry in entries">
+            <div class="row panel-heading">
+                <div class="col-xs-8 text-left">
+                    <strong>
+                    {{nodes[entry.server][entry.node]['hostname']}} - {{entry.entry.event || entry.entry.action}}
+                    </strong>
+                </div>
+                <div class="col-xs-4 text-right">
+                    {{entry['server']}}
+                </div>
+            </div>
+            <div class="row panel-body">
+                <div class="col-xs-12">
+                    <dl class="dl-horizontal">
+                        <span
+                            ng-repeat="(key, value) in entry.entry"
+                            ng-if="omittedKeys.indexOf(key) <= -1">
+                            <dt>{{key}}</dt>
+                            <dd>{{value}}</dd>
+                        </span>
+                    </dl>
+                </div>
+            </div>
+        </div>
+        {% endraw %}
+
+    </div>
+{% endblock %}

@@ -24,10 +24,12 @@ setup(
         "Topic :: System :: Installation/Setup",
     ],
     install_requires=[
-        "Flask >= 0.10.0",
+        "celery[redis] == 3.1.9",
+        "python-dateutil == 2.2",
+        "Flask == 0.10.0",
         "requests == 2.2.0",
-        "py_razor_client == 0.1.1",
-        "pyyaml >= 3.0.0",
+        "py_razor_client == 0.1.2",
+        "pyyaml == 3.10",
     ],
     tests_require=[
         "coverage == 3.7.1",
