@@ -1,0 +1,83 @@
+{% macro activity_feed(chunkSize=100) %}
+<div id="activityFeed" ng-controller="ActivityFeed" ng-init="init({{chunkSize}})">
+
+    <form role="form" class="form-horizontal">
+        <div class="form-group">
+            <div class="col-xs-11">
+                <input id="historyFilter" type="search" ng-model="search" class="form-control" placeholder="Filter">
+                <!-- <span class="glyphicon glyphicon-search"></span> -->
+            </div>
+            <div class="col-xs-1">
+                <button id="refreshButton"
+                        class="btn btn-primary btn-block"
+                        ng-click="reset()">
+                    <span class="glyphicon glyphicon-refresh"></span>
+                </button>
+            </div>
+        </div>
+    </form>
+
+    <div id="activityFeedEntries">
+        <div ng-repeat="entry in entries | filter:search">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <div class="row">
+                        <div class="col-xs-6 text-left">
+                            <strong>
+                            {% raw %}
+                            {{nodes[entry.server][entry.node]['hostname'] || entry.node}} - {{entry.entry.event || entry.entry.action}}
+                            {% endraw %}
+                            </strong>
+                        </div>
+                        <div class="col-xs-6 text-right">
+                            {% raw %}
+                            {{entry['server']}}
+                            {% endraw %}
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <dl class="dl-horizontal">
+                                <span
+                                    ng-repeat="(key, value) in entry.entry"
+                                    ng-if="omittedKeys.indexOf(key) <= -1">
+                                    {% raw %}
+                                    <dt>{{key}}</dt>
+                                    <dd>{{value}}</dd>
+                                    {% endraw %}
+                                </span>
+                            </dl>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-6">
+                            <div class="text-left">
+                                {% raw %}
+                                {{entry.entry.timestamp | date:'medium'}}
+                                {% endraw %}
+                            </div>
+                        </div>
+                        <div class="col-xs-6">
+                            <div class="text-right">
+                                {% raw %}
+                                {{entry.node}}
+                                {% endraw %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-xs-12">
+                <button id="loadButton" type="button" class="btn btn-primary btn-block" ng-click="loadMore()">
+                    Load More
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endmacro %}

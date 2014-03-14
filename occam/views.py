@@ -11,6 +11,7 @@ from occam.app import app
 from occam.app import redis
 from occam.data import make_key
 from occam.util import iterate_servers
+from occam.version import VERSION
 
 
 def json_or_template(template_name):
@@ -18,12 +19,30 @@ def json_or_template(template_name):
         @functools.wraps(f)
         def wrapper(*args, **kwargs):
             result = f(*args, **kwargs)
-            if request.headers['Accept'] == "application/json":
+            if "application/json" in request.headers['Accept']:
                 return jsonify(**result)
             else:
+                result.update(version=VERSION)
                 return render_template(template_name, **result)
         return wrapper
     return decorator
+
+
+def collection_view(collection, server=None, item=None):
+    items = {}
+    for server_name, _ in iterate_servers():
+        server_item_refs = json.loads(redis.get(make_key(server_name, collection)))
+        server_item_names = map(lambda x: x['name'], server_item_refs)
+        server_items = dict((server_item, json.loads(redis.get(make_key(server_name, collection, server_item))))
+                            for server_item in server_item_names)
+        items[server_name] = server_items
+
+    result = {
+        collection: items
+    }
+    if server and item:
+        result.update({"server": server, "selected": item})
+    return result
 
 
 @app.route("/")
@@ -32,24 +51,46 @@ def index():
 
 
 @app.route("/activity")
+@app.route("/activity/<server>/<node>")
 @json_or_template("activity.html")
-def activity():
-    entries = []
+def activity(server=None, node=None):
+    start = request.args.get('start', 0)
+    end = request.args.get('end', 99)
+    if not server and not node:
+        history_key = make_key("_all", "history")
+    else:
+        history_key = make_key(server, node, "log")
+    max_entry = redis.llen(history_key)
+
+    entries_raw = redis.lrange(history_key, start, end)
+    entries = map(json.loads, entries_raw)
     nodes = {}
     for server_name, _ in iterate_servers():
-        server_history_key = make_key(server_name, "history")
-        server_entries_raw = redis.lrange(server_history_key, 0, 50)
-        server_entries = map(json.loads, server_entries_raw)
-        entries.extend(server_entries)
-
+        server_entries = filter(lambda x: x['server'] == server_name, entries)
         server_node_refs = set(map(lambda x: x['node'], server_entries))
         server_nodes = dict((node, json.loads(redis.get(make_key(server_name, "nodes", node))))
                             for node in server_node_refs)
         nodes[server_name] = server_nodes
-    return {"entries": entries, "nodes": nodes}
+    return {
+        "entries": entries,
+        "nodes": nodes,
+        "start": start,
+        "end": end,
+        "max_entry": max_entry
+    }
 
 
-@app.route("/nodes/<node>")
+@app.route("/nodes")
+@app.route("/nodes/<server>/<node>")
 @json_or_template("nodes.html")
-def nodes(node):
-    return {}
+def nodes(server=None, node=None):
+    result = collection_view("nodes", server, node)
+    return result
+
+
+@app.route("/policies")
+@app.route("/policies/<server>/<policy>")
+@json_or_template("policies.html")
+def policies(server=None, policy=None):
+    result = collection_view("policies", server, policy)
+    return result

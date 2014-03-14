@@ -1,7 +1,105 @@
-{% from "generic_collection.html" import render_generic_collection %}
 {% extends "base.html" %}
 {% set active_page = "nodes" %}
+{% from 'activity_component.html' import activity_feed %}
+
+{% block head_js %}
+<script>
+
+window.seed_data = {};
+window.seed_data.nodes = JSON.parse('{{ nodes|tojson }}');
+{% if server and node %}
+window.seed_data.start_server = "{{server}}";
+window.seed_data.start_node = "{{node}}"
+{% endif %}
+
+</script>
+<script src="{{url_for('static', filename='js/occam/activity_feed.js')}}"></script>
+<script src="{{url_for('static', filename='js/occam/nodes.js')}}"></script>
+{% endblock %}
 
 {% block body %}
-    {{ render_generic_collection(nodes, "nodes", "node", namevar="hostname") }}
+    {% raw %}
+    <div id="node_list" ng-controller="NodeList">
+        <div class="row">
+            <div class="col-xs-12">
+                <h1>Nodes</h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-3">
+                <form name="nodefilter" role="form">
+                    <div class="form-group">
+                        <input type="search" ng-model="nodeFilter" class="form-control" placeholder="Filter">
+                    </div>
+                </form>
+                <div id="nodeListNav">
+
+                    <div class="panel panel-default">
+                        <div class="panel-heading" ng-repeat-start="(server, server_nodes) in nodes">
+                            <a class="toggle" href="" ng-click="toggleSection(server)">
+                                <span class="caret"></span>
+                                {{server}}
+                            </a>
+                        </div>
+                        <ul class="nav nav-pills nav-stacked" id="nodeList-{{server}}" ng-repeat-end>
+                            <li ng-repeat="node in server_nodes | orderObjectByString:'hostname' | filter:nodeFilter ">
+                                <a href="/nodes/{{server}}/{{node.name}}">{{ node.hostname || node.name }}
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-9">
+                <div ng-if="selectedNodeInfo">
+                    <h2 class="nodeInfoHeader">
+                        {{selectedNodeInfo.hostname || selectedNodeInfo.name}}
+                    </h2>
+                    <h4>
+                        {{selectedNodeInfo.name}} on {{selectedServer}}
+                    </h4>
+                    <dl class="dl-horizontal">
+                        <dt ng-if="selectedNodeInfo.policy">
+                            policy
+                        </dt>
+                        <dd ng-if="selectedNodeInfo.policy">
+                            <a href="/policies/{{selectedServer}}/{{selectedNodeInfo.policy.name}}">{{selectedNodeInfo.policy.name}}</a>
+                        </dd>
+                        <dt ng-if="selectedNodeInfo.tags">
+                            tags
+                        </dt>
+                        <dd ng-if="selectedNodeInfo.tags">
+                            <span ng-repeat="tag in selectedNodeInfo.tags">
+                                <a href="/tags/{{selectedServer}}/{{tag.name}}">{{ tag.name }}</a>{{$last ? '' : ', '}}
+                           </span>
+                        </dd>
+                        <span
+                            ng-repeat="(key, value) in selectedNodeInfo"
+                            ng-if="nodeOmittedKeys.indexOf(key) <= -1">
+                            <dt>
+                                <a href="" class="toggle" ng-if="valueType(value) == 'object'">
+                                    <span class="caret"></span>
+                                    {{key}}
+                                </a>
+                                <span ng-if="valueType(value) != 'object'">{{key}}</span>
+                            </dt>
+                            <dd ng-if="valueType(value) == 'simple'">{{value}}</dd>
+                            <dd ng-if="valueType(value) == 'date'">{{value|date:'medium'}}</dd>
+                            <dd ng-if="valueType(value) == 'object'">
+                                <pre>{{value|json}}</pre>
+                                <span class="hidden">...</span>
+                            </dd>
+                        </span>
+                    </dl>
+                    <hr>
+                    {% endraw %}
+                    <h4>Activity</h4>
+                    {{ activity_feed(chunkSize=10) }}
+                    {% raw %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endraw %}
+
 {% endblock %}

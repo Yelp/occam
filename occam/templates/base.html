@@ -1,5 +1,6 @@
 {% set navigation_bar = [
     (url_for('activity'), 'activity', 'Activity'),
+    (url_for('nodes'), 'nodes', 'Nodes'),
 ] -%}
 {% set active_page = active_page|default('overview') -%}
 <!DOCTYPE html>
@@ -8,6 +9,8 @@
         <title>Occam</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link href="{{url_for('static', filename='css/bootstrap-3.1.1.min.css')}}" rel="stylesheet">
+        <link href="{{url_for('static', filename='css/occam.css')}}" rel="stylesheet">
+        <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
 
         <script src="{{url_for('static', filename='js/jquery-2.0.3.min.js')}}"></script>
         <script src="{{url_for('static', filename='js/angular-1.3.0-beta1.min.js')}}"></script>
@@ -24,7 +27,7 @@
                     <ul class="nav navbar-nav">
                     {% for href, id, caption in navigation_bar %}
                         <li{% if id == active_page %} class="active"{% endif
-  %}><a href="{{href|e}}">{{caption|e}}</a></li>
+  %}><a href="{{href|e}}" target="_self">{{caption|e}}</a></li>
                     {% endfor %}
                     </ul>
                 </div>
@@ -33,6 +36,12 @@
 
         <div class="container">
             {% block body %}{% endblock %}
+
+            <div class="row footer">
+                <div class="col-xs-12">
+                    <p class="text-center"><small>Occam version {{version}}</small></p>
+                </div>
+            </div>
         </div>
 
         <script src="{{url_for('static', filename='js/bootstrap-3.1.1.min.js')}}"></script>

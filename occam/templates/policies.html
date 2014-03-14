@@ -1,7 +1,0 @@
-{% from "generic_collection.html" import render_generic_collection %}
-{% extends "base.html" %}
-{% set active_page = "policies" %}
-
-{% block body %}
-    {{ render_generic_collection(policies, "policies", "policy") }}
-{% endblock %}
