@@ -36,7 +36,6 @@ occam.controller('ActivityFeed', function ($scope, $location, $http) {
         $scope.max_entry = seedData.max_entry || 0;
 
         if ($scope.entries.length === 0) {
-            console.log("loading more");
             $scope.loadMore();
         } else {
             $("#activityFeedEntries").removeClass("darken");

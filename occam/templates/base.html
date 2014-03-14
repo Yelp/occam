@@ -1,6 +1,10 @@
 {% set navigation_bar = [
     (url_for('activity'), 'activity', 'Activity'),
     (url_for('nodes'), 'nodes', 'Nodes'),
+    (url_for('policies'), 'policies', 'Policies'),
+    (url_for('tags'), 'tags', 'Tags'),
+    (url_for('repos'), 'repos', 'Repos'),
+    (url_for('brokers'), 'brokers', 'Brokers'),
 ] -%}
 {% set active_page = active_page|default('overview') -%}
 <!DOCTYPE html>

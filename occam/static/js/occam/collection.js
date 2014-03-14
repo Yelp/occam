@@ -1,3 +1,10 @@
+var collectionViewConfig = {
+    "nodes": {
+        "prioritizedKeys": ['policy', 'tags'],
+        "omittedKeys": ['log']
+    }
+};
+
 $( document ).ready(function() {
     $(document).on('click', 'dt > a.toggle', function(event) {
         var caret = $(this).children("span.caret");
@@ -16,45 +23,45 @@ occam.config(function($locationProvider) {
     $locationProvider.html5Mode(true);
 });
 
-occam.controller('NodeList', function ($scope, $location, $http) {
-    $scope.nodes = window.seed_data.nodes || undefined;
-    $scope.selectedNode = window.seed_data.start_node || undefined;
+occam.controller('CollectionList', function ($scope, $location, $http) {
+    $scope.init = function(collectionType) {
+        var config = collectionViewConfig[collectionType] || {};
+        console.log(config);
+        $scope.prioritizedKeys = config.prioritizedKeys || [];
+        $scope.omittedKeys = config.omittedKeys || [];
+        $scope.omittedKeys = $scope.omittedKeys + $scope.prioritizedKeys;
+    };
+
+    $scope.items = window.seed_data.items || undefined;
+    $scope.selectedItem = window.seed_data.start_item || undefined;
     $scope.selectedServer = window.seed_data.start_server || undefined;
 
-    $scope.selectedNodeInfo = undefined;
-
-    $scope.nodeOmittedKeys = ['log', 'policy', 'tags'];
+    $scope.selectedItemInfo = undefined;
 
     $scope.$watch(function() { return $location.path(); }, function() {
         var bits = $location.path().split("/");
         if (bits.length == 4) {
             $scope.selectedServer = bits[2];
-            $scope.selectedNode = bits[3];
+            $scope.selectedItem = bits[3];
         } else {
             $scope.selectedServer = undefined;
-            $scope.selectedNode = undefined;
+            $scope.selectedItem = undefined;
         }
     });
 
-    $scope.$watch(function($scope) { return $scope.selectedNode; }, function() {
-        if ($scope.selectedServer && $scope.selectedNode) {
-            $scope.selectedNodeInfo = $scope.nodes[$scope.selectedServer][$scope.selectedNode];
+    $scope.$watch(function($scope) { return $scope.selectedItem; }, function() {
+        if ($scope.selectedServer && $scope.selectedItem) {
+            $scope.selectedItemInfo = $scope.items[$scope.selectedServer][$scope.selectedItem];
         } else {
-            $scope.selectedNodeInfo = undefined;
+            $scope.selectedItemInfo = undefined;
         }
     });
-
-    $scope.showNode = function(server, node) {
-        $scope.selectedNode = $scope.nodes[server][node];
-        $scope.selectedServer = server;
-        $location.path("/nodes/" + node.name);
-    };
 
     $scope.toggleSection = function(server) {
-        var listKey = "#nodeList-" + server;
-        var nodeList = $(listKey);
-        var caret = nodeList.prev("div").children("a").children("span.caret");
-        nodeList.toggle(0, function() {
+        var listKey = "#itemList-" + server;
+        var itemList = $(listKey);
+        var caret = itemList.prev("div").children("a").children("span.caret");
+        itemList.toggle(0, function() {
             caret.toggleClass("caret-right");
         });
     };
@@ -62,7 +69,11 @@ occam.controller('NodeList', function ($scope, $location, $http) {
     // This is like, the worst
     $scope.valueType = function(v) {
         if (angular.isObject(v)) {
-            return "object";
+            if (v.name && v.id && v.spec) {
+                return "reference";
+            } else {
+                return "object";
+            }
         } else if (!isNaN(new Date(v).getMonth())) {
             return "date";
         } else {

@@ -38,7 +38,8 @@ def collection_view(collection, server=None, item=None):
         items[server_name] = server_items
 
     result = {
-        collection: items
+        "items": items,
+        "collection": collection
     }
     if server and item:
         result.update({"server": server, "selected": item})
@@ -82,6 +83,7 @@ def activity(server=None, node=None):
 
 @app.route("/nodes")
 @app.route("/nodes/<server>/<node>")
+@app.route("/node/<server>/<node>")
 @json_or_template("nodes.html")
 def nodes(server=None, node=None):
     result = collection_view("nodes", server, node)
@@ -90,7 +92,35 @@ def nodes(server=None, node=None):
 
 @app.route("/policies")
 @app.route("/policies/<server>/<policy>")
-@json_or_template("policies.html")
+@app.route("/policy/<server>/<policy>")
+@json_or_template("nodes.html")
 def policies(server=None, policy=None):
     result = collection_view("policies", server, policy)
+    return result
+
+
+@app.route("/tags")
+@app.route("/tags/<server>/<tag>")
+@app.route("/tag/<server>/<tag>")
+@json_or_template("nodes.html")
+def tags(server=None, tag=None):
+    result = collection_view("tags", server, tag)
+    return result
+
+
+@app.route("/repos")
+@app.route("/repos/<server>/<repo>")
+@app.route("/repo/<server>/<repo>")
+@json_or_template("nodes.html")
+def repos(server=None, repo=None):
+    result = collection_view("repos", server, repo)
+    return result
+
+
+@app.route("/brokers")
+@app.route("/brokers/<server>/<broker>")
+@app.route("/broker/<server>/<broker>")
+@json_or_template("nodes.html")
+def brokers(server=None, broker=None):
+    result = collection_view("brokers", server, broker)
     return result

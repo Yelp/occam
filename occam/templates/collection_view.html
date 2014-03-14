@@ -1,0 +1,102 @@
+{% from 'activity_component.html' import activity_feed %}
+
+{% macro collectionView(collection, showActivityFeed=false, orderField='name') %}
+{% raw %}
+<div id="collection_list" ng-controller="CollectionList" ng-init="init('{%endraw%}{{collection}}{%raw%}')">
+    <div class="row">
+        <div class="col-xs-12">
+            {% endraw %}
+            <h1>{{collection | capitalize}}</h1>
+            {% raw %}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-3">
+            <form name="collectionfilter" role="form">
+                <div class="form-group">
+                    <input type="search" ng-model="collectionFilter" class="form-control" placeholder="Filter">
+                </div>
+            </form>
+            <div id="itemListNav">
+
+                <div class="panel panel-default">
+                    <div class="panel-heading" ng-repeat-start="(server, server_items) in items">
+                        <a class="toggle" href="" ng-click="toggleSection(server)">
+                            <span class="caret"></span>
+                            {{server}}
+                        </a>
+                    </div>
+                    <ul class="nav nav-pills nav-stacked" id="itemList-{{server}}" ng-repeat-end>
+                        <li ng-repeat="item in server_items | orderObjectByString:{%endraw%}'{{orderField}}'{%raw%} | filter:collectionFilter ">
+                            <a href="/{% endraw %}{{collection}}{% raw %}/{{server}}/{{item.name}}">
+                                {{ item.hostname || item.name }}
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-9">
+            <div ng-if="selectedItemInfo">
+                <h2 class="itemInfoHeader">
+                    {{selectedItemInfo.hostname || selectedItemInfo.name}}
+                </h2>
+                <h4>
+                    {{selectedItemInfo.name}} on {{selectedServer}}
+                </h4>
+                <dl class="dl-horizontal">
+
+                    <span ng-repeat="key in prioritizedKeys">
+                        <dt>
+                            <a href="" class="toggle" ng-if="valueType(selectedItemInfo[key]) == 'object'">
+                                <span class="caret"></span>
+                                {{key}}
+                            </a>
+                            <span ng-if="valueType(selectedItemInfo[key]) != 'object'">{{key}}</span>
+                        </dt>
+                        <dd ng-if="valueType(selectedItemInfo[key]) == 'simple'">{{selectedItemInfo[key]}}</dd>
+                        <dd ng-if="valueType(selectedItemInfo[key]) == 'date'">{{selectedItemInfo[key]|date:'medium'}}</dd>
+                        <dd ng-if="valueType(selectedItemInfo[key]) == 'reference'">
+                            <a href="/{{key}}/{{selectedServer}}/{{selectedItemInfo[key].name}}">{{selectedItemInfo[key].name}}</a>
+                        </dd>
+                        <dd ng-if="valueType(selectedItemInfo[key]) == 'object'">
+                            <pre>{{selectedItemInfo[key]|json}}</pre>
+                            <span class="hidden">...</span>
+                        </dd>
+                    </span>
+
+                    <span
+                        ng-repeat="(key, value) in selectedItemInfo"
+                        ng-if="omittedKeys.indexOf(key) <= -1">
+                        <dt>
+                            <a href="" class="toggle" ng-if="valueType(value) == 'object'">
+                                <span class="caret"></span>
+                                {{key}}
+                            </a>
+                            <span ng-if="valueType(value) != 'object'">{{key}}</span>
+                        </dt>
+                        <dd ng-if="valueType(value) == 'simple'">{{value}}</dd>
+                        <dd ng-if="valueType(value) == 'date'">{{value|date:'medium'}}</dd>
+                        <dd ng-if="valueType(selectedItemInfo[key]) == 'reference'">
+                            <a href="/{{key}}/{{selectedServer}}/{{value.name}}">{{value.name}}</a>
+                        </dd>
+                        <dd ng-if="valueType(value) == 'object'">
+                            <pre>{{value|json}}</pre>
+                            <span class="hidden">...</span>
+                        </dd>
+                    </span>
+                </dl>
+                {% endraw %}
+                {% if showActivityFeed %}
+                <hr>
+                <h4>Activity</h4>
+                {{ activity_feed(chunkSize=10) }}
+                {% endif %}
+                {% raw %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endraw %}
+
+{% endmacro %}
