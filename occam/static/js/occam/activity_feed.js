@@ -32,7 +32,7 @@ occam.controller('ActivityFeed', function ($scope, $location, $http) {
         $scope.entries = seedData.entries || [];
 
         $scope.first_entry = seedData.entry_start || 0;
-        $scope.last_entry = seedData.entry_end || 0;
+        $scope.last_entry = seedData.entry_end || -1;
         $scope.max_entry = seedData.max_entry || 0;
 
         if ($scope.entries.length === 0) {

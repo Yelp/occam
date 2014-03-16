@@ -26,7 +26,6 @@ occam.config(function($locationProvider) {
 occam.controller('CollectionList', function ($scope, $location, $http) {
     $scope.init = function(collectionType) {
         var config = collectionViewConfig[collectionType] || {};
-        console.log(config);
         $scope.prioritizedKeys = config.prioritizedKeys || [];
         $scope.omittedKeys = config.omittedKeys || [];
         $scope.omittedKeys = $scope.omittedKeys + $scope.prioritizedKeys;
@@ -66,11 +65,16 @@ occam.controller('CollectionList', function ($scope, $location, $http) {
         });
     };
 
-    // This is like, the worst
+    $scope.isReference = function(v) {
+        return (angular.isObject(v) && v.name && v.id && v.spec);
+    };
+
     $scope.valueType = function(v) {
         if (angular.isObject(v)) {
-            if (v.name && v.id && v.spec) {
+            if ($scope.isReference(v)) {
                 return "reference";
+            } else if ($.isArray(v) && v.every($scope.isReference)) {
+                return "listOfRefs";
             } else {
                 return "object";
             }

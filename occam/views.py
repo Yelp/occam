@@ -84,7 +84,7 @@ def activity(server=None, node=None):
 @app.route("/nodes")
 @app.route("/nodes/<server>/<node>")
 @app.route("/node/<server>/<node>")
-@json_or_template("nodes.html")
+@json_or_template("collection.html")
 def nodes(server=None, node=None):
     result = collection_view("nodes", server, node)
     return result
@@ -93,7 +93,7 @@ def nodes(server=None, node=None):
 @app.route("/policies")
 @app.route("/policies/<server>/<policy>")
 @app.route("/policy/<server>/<policy>")
-@json_or_template("nodes.html")
+@json_or_template("collection.html")
 def policies(server=None, policy=None):
     result = collection_view("policies", server, policy)
     return result
@@ -102,7 +102,7 @@ def policies(server=None, policy=None):
 @app.route("/tags")
 @app.route("/tags/<server>/<tag>")
 @app.route("/tag/<server>/<tag>")
-@json_or_template("nodes.html")
+@json_or_template("collection.html")
 def tags(server=None, tag=None):
     result = collection_view("tags", server, tag)
     return result
@@ -111,7 +111,7 @@ def tags(server=None, tag=None):
 @app.route("/repos")
 @app.route("/repos/<server>/<repo>")
 @app.route("/repo/<server>/<repo>")
-@json_or_template("nodes.html")
+@json_or_template("collection.html")
 def repos(server=None, repo=None):
     result = collection_view("repos", server, repo)
     return result
@@ -120,7 +120,7 @@ def repos(server=None, repo=None):
 @app.route("/brokers")
 @app.route("/brokers/<server>/<broker>")
 @app.route("/broker/<server>/<broker>")
-@json_or_template("nodes.html")
+@json_or_template("collection.html")
 def brokers(server=None, broker=None):
     result = collection_view("brokers", server, broker)
     return result
