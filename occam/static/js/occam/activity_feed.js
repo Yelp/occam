@@ -15,8 +15,8 @@ occam.controller('ActivityFeed', function ($scope, $location, $http) {
         $location.search('filter', filter);
     });
 
-    $scope.$watch(function($scope) { return $scope.selectedNode; }, function() {
-        if ($scope.selectedNode) {
+    $scope.$watch(function($scope) { return $scope.selectedItem; }, function() {
+        if ($scope.selectedItem) {
             $scope.reset();
         }
     });
@@ -49,8 +49,8 @@ occam.controller('ActivityFeed', function ($scope, $location, $http) {
         var request_start = $scope.last_entry + 1;
         var request_end = request_start + ($scope.chunkSize - 1);
         var basePath = "/activity";
-        if ($scope.selectedServer && $scope.selectedNode) {
-            basePath = "/activity/" + $scope.selectedServer + "/" + $scope.selectedNode;
+        if ($scope.selectedServer && $scope.selectedItem) {
+            basePath = "/activity/" + $scope.selectedServer + "/" + $scope.selectedItem;
         }
         // TODO: this is gross.
         var url = basePath + '?start=' + request_start + '&end=' + request_end;
