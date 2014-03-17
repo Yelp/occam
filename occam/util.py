@@ -2,17 +2,19 @@ import json
 
 from dateutil import parser as datetime_parser
 
-from occam.app import redis
+from occam.app import get_redis
 from occam.runtime import OCCAM_SERVER_CONFIG_KEY
 
 
 def get_servers():
+    redis = get_redis()
     servers = json.loads(redis.get(OCCAM_SERVER_CONFIG_KEY))
 
     return servers.items()
 
 
 def iterate_servers():
+    redis = get_redis()
     servers = json.loads(redis.get(OCCAM_SERVER_CONFIG_KEY))
 
     for server_name, server_location in servers.iteritems():

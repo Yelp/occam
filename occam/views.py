@@ -8,7 +8,7 @@ from flask import request
 from flask import url_for
 
 from occam.app import app
-from occam.app import redis
+from occam.app import get_redis
 from occam.data import make_key
 from occam.util import iterate_servers
 from occam.version import VERSION
@@ -29,6 +29,7 @@ def json_or_template(template_name):
 
 
 def collection_view(collection, server=None, item=None):
+    redis = get_redis()
     items = {}
     for server_name, _ in iterate_servers():
         server_item_refs = json.loads(redis.get(make_key(server_name, collection)))
@@ -55,6 +56,7 @@ def index():
 @app.route("/activity/<server>/<node>")
 @json_or_template("activity.html")
 def activity(server=None, node=None):
+    redis = get_redis()
     start = request.args.get('start', 0)
     end = request.args.get('end', 99)
     if not server and not node:
