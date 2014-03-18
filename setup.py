@@ -26,7 +26,7 @@ setup(
     install_requires=[
         "celery[redis] == 3.1.9",
         "python-dateutil == 2.2",
-        "Flask == 0.10.0",
+        "Flask == 0.10.1",
         "requests == 2.2.0",
         "py_razor_client == 0.1.2",
         "pyyaml == 3.10",
