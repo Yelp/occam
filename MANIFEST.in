@@ -1,0 +1,2 @@
+recursive-include occam/static *
+recursive-include occam/templates *
