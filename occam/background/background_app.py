@@ -19,10 +19,14 @@ COLLECTOR_SCHEDULE = {
     }
 }
 
+celery_args = {}
+redis_config = web_app.config.get('redis_config')
+if redis_config:
+    redis_url = make_redis_url(redis_config)
+    celery_args['backend'] = redis_url
+    celery_args['broker'] = redis_url
 
-background_app = Celery('occam',
-                        backend=make_redis_url(web_app.config.get('redis_config', {})),
-                        broker=make_redis_url(web_app.config.get('redis_config', {})))
+background_app = Celery('occam', **celery_args)
 background_app.conf.update(CELERYBEAT_SCHEDULE=COLLECTOR_SCHEDULE)
 background_app.user_options['preload'].add(Option('--occam-config',
                                                   help='Path to an Occam configuration file.'))
