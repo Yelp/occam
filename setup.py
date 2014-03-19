@@ -13,6 +13,7 @@ setup(
     keywords="razor razor-server imaging web",
     url="https://github.com/fhats/occam",
     packages=['occam', 'occam.background', 'tests'],
+    include_package_data=True,
     long_description="A frontend to the Razor automated imager tool. See https://github.com/fhats/occam for more information.",
     classifiers=[
         "Development Status :: 3 - Alpha",
